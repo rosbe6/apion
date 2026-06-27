@@ -5,7 +5,6 @@ import random
 import faker
 import requests
 import json
-import fake
 import re
 
 Fake = faker.Faker()
