@@ -1,0 +1,19 @@
+[Unit]
+Description=Apion Logs Viewer Web Dashboard
+After=network.target
+
+[Service]
+Type=simple
+User=bot
+WorkingDirectory=/home/bot/apion
+Environment="PATH=/home/bot/apion/venv/bin"
+ExecStart=/home/bot/apion/venv/bin/python /home/bot/apion/logs_viewer.py
+
+Restart=always
+RestartSec=5
+
+StandardOutput=append:/home/bot/apion/logs/logs_viewer.log
+StandardError=append:/home/bot/apion/logs/logs_viewer.log
+
+[Install]
+WantedBy=multi-user.target

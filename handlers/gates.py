@@ -715,10 +715,6 @@ async def neonet(u: Update, c: ContextTypes.DEFAULT_TYPE):
         return
 
     resultado_str = str(resultado)
-    print(f"DEBUG - resultado_str: {repr(resultado_str)}")
-    print(f"DEBUG - resultado_str.upper(): {repr(resultado_str.upper())}")
-    print(f"DEBUG - Contains 'Aprovada': {'Aprovada' in resultado_str.upper()}")
-
     status = "Approved ✅" if "Aprovada" in resultado_str.upper() else "Declined ❌"
     code = "Charged Q100" if "Aprovada" in resultado_str.upper() else resultado_str
     escaped_result = html.escape(resultado_str)
@@ -764,18 +760,22 @@ async def b31(u: Update, c: ContextTypes.DEFAULT_TYPE):
     if not valida:
         return await u.message.reply_text(motivo, parse_mode="HTML")
 
-    status_msg = await u.message.reply_text("<b>[ NeoNet ]</b>\n⏳ <i>Iniciando check...</i>", parse_mode="HTML")
+    status_msg = await u.message.reply_text("<b>[ Braintree ]</b>\n⏳ <i>Iniciando check...</i>", parse_mode="HTML")
     loop = asyncio.get_event_loop()
     try:
         resultado = await loop.run_in_executor(executor, b3run, cc_input)
     except Exception as e:
-        print(f"[b3] Error: {e}")
-        await status_msg.edit_text(f"❌ Error técnico: {str(e)[:120]}", parse_mode="HTML")
+        await status_msg.edit_text(f"❌ Error técnico: Reintenta", parse_mode="HTML")
         return
 
     resultado_str = str(resultado)
-    status = "Approved ✅" if "Aprovada" in resultado_str.upper() else "Declined ❌"
-    code = "Charged" if "Aprovada" in resultado_str.upper() else resultado_str
+    
+    # CORRECCIÓN: El texto a buscar ahora está completamente en MAYÚSCULAS
+    status = "Approved CCN✅" if "THE CARD VERIFICATION NUMBER DOES NOT" in resultado_str.upper() else "Declined ❌"
+    
+    # CORRECCIÓN: El texto a buscar está en MAYÚSCULAS (y cambiamos a "APPROVED" si la API responde en inglés)
+    code = "Charged" if "APPROVED" in resultado_str.upper() else resultado_str
+    
     escaped_result = html.escape(resultado_str)
     escaped_code = html.escape(code)
     bin_info = await get_info_bin_format(cc_input.split("|")[0])

