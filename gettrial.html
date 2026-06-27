@@ -1,0 +1,73 @@
+<turbo-stream action="replace" target="new_user"><template><form class="row" id="new_user" action="/trial_subscription" accept-charset="UTF-8" method="post"><input type="hidden" name="authenticity_token" value="CuOFurMuOPi80EhEfhIwvRq1lVSZS0w6AVdSSjPfRA0jw7FDDWnwt9U4GuvNfZNvdNrDqEBDnjTBJE9YTlpgew" /><input type="hidden" name="plan" id="plan" value="annually" />
+<input id="ga_client_id" type="hidden" value="" name="user[ga_client_id]" />
+<div class='page__content'>
+<div class='page__preface lead'>
+Get started with Lifehacker's #1 meal plan service!
+</div>
+<div class='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6'>
+<div>
+<label class="font-extrabold text-lg text-secondary" for="user_first_name">First name</label>
+<input class="form-control form-control-lg" type="text" value="Mar" name="user[first_name]" id="user_first_name" />
+
+</div>
+<div>
+<label class="font-extrabold text-lg text-secondary" for="user_last_name">Last name</label>
+<input class="form-control form-control-lg" type="text" value="Cass" name="user[last_name]" id="user_last_name" />
+
+</div>
+<div>
+<label class="font-extrabold text-lg text-secondary" for="user_email">E-mail</label>
+<input class="form-control form-control-lg is-invalid" type="email" value="marcas3434@gmail.com" name="user[email]" id="user_email">
+<div class="invalid-feedback">Looks like you already have an account. Please <a href="/subscribe">login</a> first.</div>
+</div>
+<div>
+<label class="font-extrabold text-lg text-secondary" for="user_password">Password</label>
+<input value="rossaQ333" class="form-control form-control-lg" type="password" name="user[password]" id="user_password" />
+
+</div>
+<div class='mb-1'>
+<label class="font-extrabold text-lg text-secondary" for="user_password_confirmation">Confirm your password</label>
+<input value="rossaQ333" class="form-control form-control-lg" type="password" name="user[password_confirmation]" id="user_password_confirmation" />
+
+</div>
+<turbo-frame id="recaptcha"><div class='mt-4 mb-0 inline'>
+<script src="https://www.recaptcha.net/recaptcha/api.js?onload=executeRecaptchaForRegistration&render=6LcSubIUAAAAAEEddgzWVFHGwKs9VsO6OfH7RmJ3"   ></script>
+        <script>
+          function executeRecaptchaForRegistration() {
+            grecaptcha.ready(function() {
+              grecaptcha.execute('6LcSubIUAAAAAEEddgzWVFHGwKs9VsO6OfH7RmJ3', {action: 'registration'}).then(function(token) {
+                setInputWithRecaptchaResponseTokenForRegistration('g-recaptcha-response-data-registration', token)
+              });
+            });
+          };
+                  var setInputWithRecaptchaResponseTokenForRegistration = function(id, token) {
+          var element = document.getElementById(id);
+          if (element !== null) element.value = token;
+        }
+
+        </script>
+<input type="hidden" name="g-recaptcha-response-data[registration]" id="g-recaptcha-response-data-registration" data-sitekey="6LcSubIUAAAAAEEddgzWVFHGwKs9VsO6OfH7RmJ3" class="g-recaptcha g-recaptcha-response "/>
+
+</div>
+</turbo-frame></div>
+</div>
+<div class='page__footer'>
+<div class='flex flex-col sm:flex-row sm:items-center sm:justify-between'>
+<div class='text-left mb-2 sm:mb-0'>
+<p class='text-secondary sm:mb-0'>
+By signing up, you accept our
+<a target="_blank" href="http://www.cooksmarts.com/terms-of-use/">terms of use</a>
+and
+<a target="_blank" href="http://www.cooksmarts.com/privacy-policy/">privacy policy</a>.
+</p>
+</div>
+<div class='text-center sm:text-right'>
+<input type="submit" name="commit" value="Next" data-disable-with="Please wait.." class="btn btn-primary btn-lg" />
+</div>
+</div>
+</div>
+</form></template></turbo-stream>
+<turbo-stream action="replace" target="recaptcha"><template><div class='inline mt-4 mb-0 g-recaptcha' data-controller='recaptcha-v2' data-recaptcha-v2-site-key-value='6Ldqv7IUAAAAANVx5Ai9pFK7LL-AmjiSK4dk7KAl' id='recaptchaV2'></div>
+</template></turbo-stream><turbo-stream action="replace" target="flash-messages"><template><div id='flash-messages'>
+</div>
+</template></turbo-stream>

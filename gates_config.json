@@ -1,0 +1,15 @@
+{
+    "pp": true,
+    "gt": true,
+    "pfw": true,
+    "stp": true,
+    "gencookieca": false,
+    "gencookiemx": false,
+    "gencookieus": false,
+    "genmanusa": true,
+    "genmanca": true,
+    "genmanmx": true,
+    "clo": false,
+    "neonet": true,
+    "braintree1": true
+}

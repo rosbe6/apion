@@ -1,0 +1,103 @@
+{
+    "keys": [
+        {
+            "key": "APION-PREMIUM-TIME-QVXIEYKR3O",
+            "used": false,
+            "days": 100,
+            "permanent": false,
+            "range": "Premium"
+        },
+        {
+            "key": "APION-PREMIUM-TIME-SPTJYD43VK",
+            "used": false,
+            "days": 2,
+            "permanent": false,
+            "range": "Premium"
+        },
+        {
+            "key": "APION-PREMIUM-EVER-203DQZ860G",
+            "used": true,
+            "permanent": true,
+            "range": "Premium",
+            "user": 5812146511
+        },
+        {
+            "key": "APION-PREMIUM-EVER-AXMV230W8I",
+            "used": false,
+            "permanent": true,
+            "range": "Premium"
+        },
+        {
+            "key": "APION-PREMIUM-TIME-Q68YUHWZTA",
+            "used": true,
+            "days": 15,
+            "permanent": false,
+            "range": "Premium",
+            "user": 7729000084
+        },
+        {
+            "key": "APION-PREMIUM-EVER-I7CWS2CQ65",
+            "used": false,
+            "permanent": true,
+            "range": "Premium"
+        },
+        {
+            "key": "APION-PREMIUM-TIME-CP7UC1IU4J",
+            "used": true,
+            "days": 30,
+            "permanent": false,
+            "range": "Premium",
+            "user": 5524135342
+        }
+    ],
+    "usuarios": {
+        "-1003339723213": {
+            "rango": "PREMIUM",
+            "expires_at": "EVER",
+            "credits": 0
+        },
+        "-1003872393568": {
+            "rango": "PREMIUM",
+            "expires_at": "EVER",
+            "credits": 0
+        },
+        "5651880136": {
+            "rango": "PREMIUM",
+            "expires_at": "EVER"
+        },
+        "7501428082": {
+            "rango": "PREMIUM",
+            "expires_at": "2026-05-15T16:58:32.312390",
+            "credits": 0.25
+        },
+        "8570428553": {
+            "rango": "PREMIUM",
+            "expires_at": "2026-05-15T16:50:42.326504",
+            "credits": 0
+        },
+        "5133617831": {
+            "rango": "ADMIN",
+            "expires_at": "EVER",
+            "credits": 0
+        },
+        "5812146511": {
+            "rango": "PREMIUM",
+            "expires_at": "EVER",
+            "credits": 1
+        },
+        "1651841843": {
+            "rango": "PREMIUM",
+            "expires_at": "2026-06-01T01:30:53.223649",
+            "credits": 3
+        },
+        "7729000084": {
+            "rango": "PREMIUM",
+            "expires_at": "2026-06-03T14:27:21.488487",
+            "credits": 1.75
+        },
+        "5524135342": {
+            "rango": "PREMIUM",
+            "expires_at": "2026-07-05T23:01:24.288388"
+        }
+    }
+}

@@ -1,0 +1,20 @@
+[Unit]
+Description=Apion Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+User=bot
+WorkingDirectory=/home/bot/apion
+Environment="PATH=/home/bot/apion/venv/bin"
+EnvironmentFile=/home/bot/apion/.env
+ExecStart=/home/bot/apion/venv/bin/python main.py
+
+Restart=always
+RestartSec=10
+
+StandardOutput=append:/home/bot/apion/logs/bot.log
+StandardError=append:/home/bot/apion/logs/bot.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+[Unit]
+Description=Apion Promerica API Service
+After=network.target
+
+[Service]
+Type=simple
+User=bot
+WorkingDirectory=/home/bot/apion
+Environment="PATH=/home/bot/apion/venv/bin"
+EnvironmentFile=/home/bot/apion/.env
+ExecStart=/home/bot/apion/venv/bin/python -m apis_ext.promerica
+
+Restart=always
+RestartSec=5
+
+StandardOutput=append:/home/bot/apion/logs/promerica.log
+StandardError=append:/home/bot/apion/logs/promerica.log
+
+[Install]
+WantedBy=multi-user.target

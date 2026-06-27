@@ -1,0 +1,39 @@
+# Telegram Bot Framework
+python-telegram-bot>=20.0
+APScheduler>=3.10.0
+
+# HTTP & Web Automation
+requests>=2.31.0
+httpx>=0.24.0
+curl-cffi>=0.5.9
+DrissionPage>=4.1.0
+
+# Data Generation & Processing
+Faker>=20.0.0
+random-address>=1.1.0
+
+# System & Async
+psutil>=5.9.0
+asyncio-contextmanager>=1.0.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Environment & Config
+python-dotenv>=1.0.0
+
+# Cryptography
+cryptography>=41.0.0
+
+# Web Framework (for APIs)
+FastAPI>=0.100.0
+uvicorn>=0.23.0
+
+# Logging
+loguru>=0.7.0
+
+# Colorama (for colored output in console)
+colorama>=0.4.6
+
+# Image recognition for CAPTCHA (optional)
+easyocr>=1.7.0
