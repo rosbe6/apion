@@ -19,7 +19,7 @@ PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-GT-rotate:cpyp
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
 
 def get_session_id():
-    # Genera un ID de sesión único para rotar IP en cada petición
+    # Genera un ID de sesión úniaaco para rotar IP en cada petición
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
 
 def capture(string, start, end):
