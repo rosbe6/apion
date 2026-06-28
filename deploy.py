@@ -9,7 +9,7 @@ import paramiko
 VPS_IP = "38.247.141.48"
 VPS_USER = "administrator"
 VPS_PATH = "/home/bot/apion"
-print("Hola soy deploy")
+
 def run_command(cmd, description):
     """Ejecuta comando local"""
     print(f"\n📌 {description}...")
