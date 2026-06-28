@@ -205,4 +205,4 @@ def logs():
         return render_template_string(HTML_TEMPLATE, logs_content=f"<div class='log-line error'>Error: {str(e)}</div>")
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=8080, debug=False)
