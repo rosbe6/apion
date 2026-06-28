@@ -192,6 +192,8 @@ async def registro_high_score_us_telegram(u: Update, c: ContextTypes.DEFAULT_TYP
     co = ChromiumOptions()
     co.set_browser_path(chromium_path)
     co.set_user_data_path(perfil_dir)
+    co.set_argument('--headless=new')
+    co.set_argument('--no-sandbox')
     co.set_argument('--disable-features=OptimizationGuideModelDownloading,OptimizationHints,OptimizationTargetPrediction,OptimizationGuide')
     co.set_argument('--disable-component-update')
     co.set_argument('--disable-background-networking')
