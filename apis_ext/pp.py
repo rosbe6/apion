@@ -32,7 +32,7 @@ def capture(string, start, end):
 
 def curl_request(method, url, headers=None, data=None, proxy=None):
     """Realiza request usando curl via subprocess"""
-    cmd = ["curl", "-s", "-X", method, url]
+    cmd = ["/usr/bin/curl", "-s", "-X", method, url]
 
     if proxy:
         cmd.extend(["-x", proxy])
