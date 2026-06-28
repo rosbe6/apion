@@ -8,6 +8,8 @@ from fastapi import FastAPI
 from colorama import Fore, init
 from html import unescape
 from dotenv import load_dotenv
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 load_dotenv()
 
@@ -50,10 +52,19 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
     session.proxies.update(proxies)
     session.verify = False
 
+    retry = Retry(
+        total=3,
+        backoff_factor=0.5,
+        status_forcelist=(500, 502, 504)
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
     try:
         # PASO 1: Obtener Token Facilitador
         url_sdk = f"https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID={PAYPAL_CLIENT_ID}&env=production&currency=USD&intent=capture"
-        r = session.get(url_sdk, headers=head_base, timeout=40)
+        r = session.get(url_sdk, headers=head_base, timeout=60)
         token = capture(r.text, '"facilitatorAccessToken":"', '"')
 
         if not token:
