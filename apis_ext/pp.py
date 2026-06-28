@@ -15,7 +15,7 @@ init(autoreset=True)
 app = FastAPI()
 
 # === CONFIGURACIÓN DESDE .env ===
-PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://p.webshare.io:9999")
+PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-US-rotate:cpyp473gyvje@p.webshare.io:80")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
 
 def get_session_id():
