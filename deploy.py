@@ -69,9 +69,9 @@ def deploy():
 
         print("✅ Conectado a VPS\n")
 
-        # Git pull
+        # Git pull (con sudo para permisos)
         print("📥 Haciendo git pull...")
-        output = ssh_exec(ssh, f"cd {VPS_PATH} && git pull origin main", vps_password)
+        output = ssh_exec(ssh, f"sudo -S bash -c 'cd {VPS_PATH} && git pull origin main'", vps_password)
         print(output)
 
         # Reiniciar servicios
