@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from colorama import Fore, init
 from html import unescape
 from dotenv import load_dotenv
+
 load_dotenv()
 
 init(autoreset=True)
@@ -31,8 +32,9 @@ def capture(string, start, end):
 @app.get("/check")
 async def check_card(cc: str, mm: str, aa: str, cvv: str):
     session_id = get_session_id()
+    proxy_url = PAYPAL_PROXY_URL
 
-    print(f"{Fore.CYAN}🔎 Probando con PayPal: {cc}|{mm}|{aa}|{cvv} (Session: {session_id})")
+    print(f"{Fore.CYAN}🔎 Probando con IPRoyal: {cc}|{mm}|{aa}|{cvv} (Session: {session_id})")
 
     head_base = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -42,7 +44,7 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         "Referer": "https://onehealthworkforceacademies.org/"
     }
 
-    async with httpx.AsyncClient(proxy=PAYPAL_PROXY_URL, verify=False, timeout=40.0) as session:
+    async with httpx.AsyncClient(proxy=proxy_url, verify=False, timeout=40.0) as session:
         try:
             url_sdk = "https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID=Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh&env=production&currency=USD&intent=capture"
             r = await session.get(url_sdk, headers=head_base)
@@ -107,11 +109,11 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
             print(res_text[:500] + "...")
             print(f"{Fore.MAGENTA}------------------------")
 
-            if "is3DSecureRequired" in err_code or "APPROVE_GUEST_PAYMENT_COMPLETED" in res_text:
+            if err_code and ("is3DSecureRequired" in err_code or "APPROVE_GUEST_PAYMENT_COMPLETED" in res_text):
                 print(f"{Fore.GREEN}✅ LIVE: {cc}")
                 return {"status": "approved", "msg": "CHARGED 1$ ✅"}
 
-            elif "is3DSecureRequired" in err_code or "INVALID_SECURITY_CODE" in res_text:
+            elif err_code and ("is3DSecureRequired" in err_code or "INVALID_SECURITY_CODE" in res_text):
                 print(f"{Fore.GREEN}✅ LIVE: {cc}")
                 return {"status": "approved", "msg": "INVALID SECURITY CODE ✅"}
 
