@@ -365,7 +365,7 @@ async def registro_high_score_ca_telegram(u: Update, c: ContextTypes.DEFAULT_TYP
             if 'aws-waf-token' in cookies_navegador:
                 print("💎 AWS WAF Token detectado y capturado.")
             else:
-                print("⚠️ WAF Token no encontrado en cookies base, se generará en el siguiente paso.")
+                print("⚠️ WaAF Token no encontrado en cookies base, se generará en el siguiente paso.")
                 
         except Exception as e:
             print(f"❌ Error en extracción: {e}")
