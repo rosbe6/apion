@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from colorama import Fore, init
 from html import unescape
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
 
@@ -16,6 +17,13 @@ app = FastAPI()
 
 PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://p.webshare.io:9999")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
+
+def parse_proxy(proxy_url):
+    parsed = urlparse(proxy_url)
+    if parsed.username and parsed.password:
+        proxy_without_auth = f"{parsed.scheme}://{parsed.hostname}:{parsed.port}" if parsed.port else f"{parsed.scheme}://{parsed.hostname}"
+        return proxy_without_auth, parsed.username, parsed.password
+    return proxy_url, None, None
 
 def get_session_id():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
@@ -32,7 +40,7 @@ def capture(string, start, end):
 @app.get("/check")
 async def check_card(cc: str, mm: str, aa: str, cvv: str):
     session_id = get_session_id()
-    proxy_url = PAYPAL_PROXY_URL
+    proxy_url, proxy_user, proxy_pass = parse_proxy(PAYPAL_PROXY_URL)
 
     print(f"{Fore.CYAN}🔎 Probando con PayPal: {cc}|{mm}|{aa}|{cvv} (Session: {session_id})")
 
@@ -44,7 +52,8 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         "Referer": "https://onehealthworkforceacademies.org/"
     }
 
-    async with httpx.AsyncClient(proxy=proxy_url, verify=False, timeout=40.0) as session:
+    auth = httpx.BasicAuth(proxy_user, proxy_pass) if proxy_user else None
+    async with httpx.AsyncClient(proxy=proxy_url, auth=auth, verify=False, timeout=40.0) as session:
         try:
             url_sdk = "https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID=Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh&env=production&currency=USD&intent=capture"
             r = await session.get(url_sdk, headers=head_base)
