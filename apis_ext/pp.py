@@ -87,7 +87,7 @@ async def check_card(cc: str, mm: str, aa: str, cvv: str):
         print(f"{Fore.YELLOW}⏳ Esperando validación de PayPal...")
         await asyncio.sleep(random.uniform(5, 8))
 
-        # PASO 3: GraphQL (Pago Final)
+        # PASO 3: GraphQLa (Pago Final)
         head3 = {
             **head_base,
             "Content-Type": "application/json",
