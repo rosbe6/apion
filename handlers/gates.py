@@ -783,7 +783,7 @@ async def b31(u: Update, c: ContextTypes.DEFAULT_TYPE):
     final_msg = (
         "<b>━━ ━ ━ ━ ━ ━ ━ ━ ━━</b>\n"
         f"<b>CC ></b> <code>{html.escape(cc_input)}</code>\n"
-        f"<b>Status ></b> {status}\n"
+        f"<b>Statusa ></b> {status}\n"
         f"<b>Code ></b> {escaped_code}\n"
         "<b>━━ ━ ━ ━ ━ ━ ━ ━ ━━</b>\n"
         f"{bin_info}\n"

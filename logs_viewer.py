@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Simple web dashboard para ver logs del bot en vivo"""
+"""Real-time web dashboard para ver logs del bot"""
 
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string, Response
 import os
-from datetime import datetime
+import time
+import threading
 
 app = Flask(__name__)
+
+# Variable para trackear la posición del archivo
+file_position = 0
+file_lock = threading.Lock()
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Apion Bot - Logs Viewer</title>
+    <title>Apion Bot - Logs Viewer (En Vivo)</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="5">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -57,18 +61,18 @@ HTML_TEMPLATE = """
             height: 10px;
             border-radius: 50%;
             background: #4ec9b0;
-            animation: pulse 2s infinite;
+            animation: pulse 1s infinite;
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.3; }
         }
         .logs {
             background: #1e1e1e;
             border: 1px solid #404040;
             border-radius: 5px;
             padding: 15px;
-            max-height: 600px;
+            height: 600px;
             overflow-y: auto;
             font-size: 13px;
         }
@@ -76,6 +80,7 @@ HTML_TEMPLATE = """
             margin-bottom: 5px;
             padding: 5px;
             border-radius: 3px;
+            word-break: break-word;
         }
         .log-line.error {
             color: #f48771;
@@ -102,7 +107,6 @@ HTML_TEMPLATE = """
             color: #858585;
             font-size: 12px;
         }
-        /* Scrollbar personalizada */
         .logs::-webkit-scrollbar {
             width: 8px;
         }
@@ -121,14 +125,11 @@ HTML_TEMPLATE = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Apion Bot - Logs Viewer</h1>
+            <h1>🚀 Apion Bot - Logs En Vivo</h1>
             <div class="status">
                 <div class="status-item">
                     <div class="status-dot"></div>
-                    <span>En vivo</span>
-                </div>
-                <div class="status-item">
-                    <span>Actualiza cada 5 segundos</span>
+                    <span>En tiempo real</span>
                 </div>
                 <div class="status-item">
                     <span id="time"></span>
@@ -137,72 +138,101 @@ HTML_TEMPLATE = """
         </div>
 
         <div class="logs" id="logs">
-            <div class="log-line info">Cargando logs...</div>
+            <div class="log-line info">Conectando a logs en vivo...</div>
         </div>
 
         <div class="footer">
-            <p>📊 Dashboard de logs | Auto-refresh cada 5s | Última actualización: <span id="last-update"></span></p>
+            <p>📊 Dashboard de logs en tiempo real | Última línea: <span id="last-update">--:--:--</span></p>
         </div>
     </div>
 
     <script>
+        const logsDiv = document.getElementById('logs');
+
         function updateTime() {
             const now = new Date();
             document.getElementById('time').textContent = now.toLocaleTimeString();
-            document.getElementById('last-update').textContent = now.toLocaleTimeString();
         }
         updateTime();
         setInterval(updateTime, 1000);
 
-        // Desplazarse al final automáticamente
-        document.addEventListener('DOMContentLoaded', function() {
-            const logs = document.getElementById('logs');
-            setTimeout(() => {
-                logs.scrollTop = logs.scrollHeight;
-            }, 100);
-        });
+        function connectToStream() {
+            const eventSource = new EventSource('/stream');
+
+            eventSource.onmessage = function(event) {
+                const line = event.data;
+                if (!line) return;
+
+                const logLine = document.createElement('div');
+                logLine.className = 'log-line';
+
+                if (line.includes('ERROR')) {
+                    logLine.classList.add('error');
+                } else if (line.includes('WARNING')) {
+                    logLine.classList.add('warning');
+                } else if (line.includes('DEBUG')) {
+                    logLine.classList.add('debug');
+                } else {
+                    logLine.classList.add('info');
+                }
+
+                logLine.textContent = line;
+                logsDiv.appendChild(logLine);
+
+                // Desplazarse al final
+                logsDiv.scrollTop = logsDiv.scrollHeight;
+
+                // Actualizar timestamp
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            };
+
+            eventSource.onerror = function() {
+                logsDiv.innerHTML = '<div class="log-line error">❌ Conexión perdida. Reconectando...</div>';
+                eventSource.close();
+                setTimeout(connectToStream, 3000);
+            };
+        }
+
+        connectToStream();
     </script>
 </body>
 </html>
 """
 
 @app.route('/')
-def logs():
+def index():
+    return render_template_string(HTML_TEMPLATE)
+
+@app.route('/stream')
+def stream():
+    """Envía los logs en tiempo real usando Server-Sent Events"""
     log_file = '/home/bot/apion/logs/bot.log'
 
     if not os.path.exists(log_file):
-        return render_template_string(HTML_TEMPLATE, logs_content="<div class='log-line error'>❌ Archivo de logs no encontrado</div>")
+        def error_generator():
+            yield f"data: ❌ Archivo de logs no encontrado\n\n"
+        return Response(error_generator(), mimetype='text/event-stream')
 
-    try:
-        with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
-            lines = f.readlines()
-            # Últimas 100 líneas
-            lines = lines[-100:]
+    def generate():
+        global file_position
 
-        logs_html = ""
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
+        try:
+            with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
+                # Ir al final del archivo
+                f.seek(0, 2)
+                file_position = f.tell()
 
-            # Colorear por tipo
-            if "ERROR" in line:
-                logs_html += f'<div class="log-line error">{line}</div>'
-            elif "WARNING" in line:
-                logs_html += f'<div class="log-line warning">{line}</div>'
-            elif "DEBUG" in line:
-                logs_html += f'<div class="log-line debug">{line}</div>'
-            else:
-                logs_html += f'<div class="log-line info">{line}</div>'
+                while True:
+                    line = f.readline()
+                    if line:
+                        line = line.rstrip('\n')
+                        yield f"data: {line}\n\n"
+                    else:
+                        time.sleep(0.1)
+        except Exception as e:
+            yield f"data: ❌ Error: {str(e)}\n\n"
 
-        return render_template_string(
-            HTML_TEMPLATE.replace(
-                '<div class="log-line info">Cargando logs...</div>',
-                logs_html
-            )
-        )
-    except Exception as e:
-        return render_template_string(HTML_TEMPLATE, logs_content=f"<div class='log-line error'>Error: {str(e)}</div>")
+    return Response(generate(), mimetype='text/event-stream')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=False)
