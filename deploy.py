@@ -22,9 +22,15 @@ def run_command(cmd, description):
         print(result.stdout)
     return True
 
-def ssh_exec(ssh, command):
+def ssh_exec(ssh, command, password=None):
     """Ejecuta comando en VPS via SSH"""
     stdin, stdout, stderr = ssh.exec_command(command)
+
+    # Si necesita contraseña (para sudo), enviarla
+    if password and "sudo" in command:
+        stdin.write(password + "\n")
+        stdin.flush()
+
     output = stdout.read().decode()
     error = stderr.read().decode()
     if error:
@@ -65,17 +71,17 @@ def deploy():
 
         # Git pull
         print("📥 Haciendo git pull...")
-        output = ssh_exec(ssh, f"cd {VPS_PATH} && git pull origin main")
+        output = ssh_exec(ssh, f"cd {VPS_PATH} && git pull origin main", vps_password)
         print(output)
 
         # Reiniciar servicios
         print("\n🔄 Reiniciando servicios...")
-        output = ssh_exec(ssh, "sudo systemctl restart apion.service apion-paypal.service apion-promerica.service apion-logs-viewer.service")
+        output = ssh_exec(ssh, "sudo -S systemctl restart apion.service apion-paypal.service apion-promerica.service apion-logs-viewer.service", vps_password)
         print(output)
 
         # Ver estado
         print("\n📊 Estado de servicios:")
-        output = ssh_exec(ssh, "sudo systemctl status apion.service --no-pager")
+        output = ssh_exec(ssh, "sudo -S systemctl status apion.service --no-pager", vps_password)
         print(output)
 
         ssh.close()
