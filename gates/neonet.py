@@ -22,11 +22,14 @@ proxies_config = {
 
 session = None
 
+
 def generar_numero_aleatorio():
-    """Genera número de 8 dígitos iniciando en 3, 4 o 5"""
-    primer_digito = random.choice([3, 4, 5])
-    resto = random.randint(0, 9999999)
-    return int(f"{primer_digito}{resto:07d}")
+    """Genera número de teléfono USA: +1 (XXX) XXX-XXXX"""
+    area_code = random.randint(200, 999)  # XXX
+    exchange = random.randint(200, 999)   # XXX
+    subscriber = random.randint(1000, 9999)  # XXXX
+    return f"+1 ({area_code}) {exchange}-{subscriber}"
+
 
 
 def generar_datos_aleatorios():
