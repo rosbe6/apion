@@ -293,6 +293,7 @@ async def registro_high_score_ca_telegram(u: Update, c: ContextTypes.DEFAULT_TYP
 
         # Resolver CAPTCHA
         print("[*] Resolviendo CAPTCHA...")
+        
         solve_captcha(page, CAPSOLVER_API_KEY)
 
         # Esperar a que aparezca el campo de OTP

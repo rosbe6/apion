@@ -22,6 +22,11 @@ proxies_config = {
 
 session = None
 
+def generar_numero_aleatorio():
+    """Genera número de 8 dígitos iniciando en 3, 4 o 5"""
+    primer_digito = random.choice([3, 4, 5])
+    resto = random.randint(0, 9999999)
+    return int(f"{primer_digito}{resto:07d}")
 
 
 def generar_datos_aleatorios():
@@ -137,7 +142,7 @@ def checkout(tokencap,nonce,ccnumber,mes,ano,cvv):
     'sec-ch-ua-platform': '"Windows"',
     }
 
-    data = f'wc_order_attribution_source_type=typein&wc_order_attribution_referrer=(none)&wc_order_attribution_utm_campaign=(none)&wc_order_attribution_utm_source=(direct)&wc_order_attribution_utm_medium=(none)&wc_order_attribution_utm_content=(none)&wc_order_attribution_utm_id=(none)&wc_order_attribution_utm_term=(none)&wc_order_attribution_utm_source_platform=(none)&wc_order_attribution_utm_creative_format=(none)&wc_order_attribution_utm_marketing_tactic=(none)&wc_order_attribution_session_entry=https%3A%2F%2Fbeautydepot.com.gt%2Fcarro-de-compras%2F&wc_order_attribution_session_start_time={session_start}&wc_order_attribution_session_pages={session_pages}&wc_order_attribution_session_count=1&wc_order_attribution_user_agent=Mozilla%2F5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Chrome%2F148.0.0.0+Safari%2F537.36&billing_first_name={nombre}&billing_last_name={apellido}&billing_nit={nit}&billing_company=&billing_country=GT&billing_address_1=75+Street+Road&billing_address_2=&billing_city=Warminster&billing_state=GT-CM&billing_postcode=18974&billing_phone=161456355087&billing_email={correo}&billing_birthday=2000-12-25&order_comments=&coupon_code=&g-recaptcha-response={tokencap}&payment_method=cybs&cybs-card-number={ccnumber}&cybs-card-expiry={mes}+%2F+{ano}&cybs-card-cvc={cvv}&cybs-card-name=Mario+Ruiz&terms=on&terms-field=1&woocommerce-process-checkout-nonce={nonce}&_wp_http_referer=%2F%3Fwc-ajax%3Dupdate_order_review'
+    data = f'wc_order_attribution_source_type=typein&wc_order_attribution_referrer=(none)&wc_order_attribution_utm_campaign=(none)&wc_order_attribution_utm_source=(direct)&wc_order_attribution_utm_medium=(none)&wc_order_attribution_utm_content=(none)&wc_order_attribution_utm_id=(none)&wc_order_attribution_utm_term=(none)&wc_order_attribution_utm_source_platform=(none)&wc_order_attribution_utm_creative_format=(none)&wc_order_attribution_utm_marketing_tactic=(none)&wc_order_attribution_session_entry=https%3A%2F%2Fbeautydepot.com.gt%2Fcarro-de-compras%2F&wc_order_attribution_session_start_time={session_start}&wc_order_attribution_session_pages={session_pages}&wc_order_attribution_session_count=1&wc_order_attribution_user_agent=Mozilla%2F5.0+(Windows+NT+10.0%3B+Win64%3B+x64)+AppleWebKit%2F537.36+(KHTML%2C+like+Gecko)+Chrome%2F148.0.0.0+Safari%2F537.36&billing_first_name={nombre}&billing_last_name={apellido}&billing_nit={nit}&billing_company=&billing_country=GT&billing_address_1=75+Street+Road&billing_address_2=&billing_city=Warminster&billing_state=GT-CM&billing_postcode=18974&billing_phone={generar_numero_aleatorio()}&billing_email={correo}&billing_birthday=2000-12-25&order_comments=&coupon_code=&g-recaptcha-response={tokencap}&payment_method=cybs&cybs-card-number={ccnumber}&cybs-card-expiry={mes}+%2F+{ano}&cybs-card-cvc={cvv}&cybs-card-name=Mario+Ruiz&terms=on&terms-field=1&woocommerce-process-checkout-nonce={nonce}&_wp_http_referer=%2F%3Fwc-ajax%3Dupdate_order_review'
 
     import re
     
