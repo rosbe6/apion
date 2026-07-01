@@ -11,8 +11,8 @@ SITE_KEY = "6Le908oUAAAAAAYXOj9KeXt18sTzQ7JpQQ-6j8Fp"
 PAGE_URL = "https://www.according2prophecy.org/Merchant2/merchant.mvc"
 
 # === CONFIGURACIÓN IPROYAL ===
-USER = "o1CK8doqxzS9ENdO"
-PASS_BASE = "ewwKtN9UnwgSnWnV_country-us"
+USER = "qaxtdvtr-US-rotate"
+PASS_BASE = "cpyp473gyvje"
 
 fake = Faker('en_US')
 
@@ -31,7 +31,7 @@ class ProphecyChecker:
         
         # Rotación automática por sesión
         session_id = get_session_id()
-        self.proxy_url = f"http://p.webshare.io:9999"
+        self.proxy_url = f"http://{USER}:{PASS_BASE}@p.webshare.io:80"
         
         self.ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         self.sid = None
