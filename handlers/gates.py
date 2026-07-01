@@ -23,7 +23,7 @@ from engines.bins_engine import get_bin_dict
 from amz.amz_us import registro_high_score_us
 from amz.amz_mx import registro_high_score_mx
 from amz.amz_ca import registro_high_score_ca
-from gatestest.oja import check_card
+from gates.stripe import run
 
 
 # --- CONSTANTES ---
@@ -380,31 +380,31 @@ async def stripecharged_handler(u: Update, c: ContextTypes.DEFAULT_TYPE):
             continue
         try:
             # Ejecutar check_card (bloqueante) en executor
-            res = await loop.run_in_executor(executor, check_card, card, None)
+            res = await loop.run_in_executor(executor, run, card )
             mb = res.get("mb_copy") or ""
             err = res.get("error") or ""
             pm = res.get("payment_method") or {}
             combined = " ".join([str(mb), str(err), str(pm)]).lower()
 
-            decline_kw = ["declin", "was declined", "card was declined", "your card was declined"]
+            decline_kw = ["was declined", "card was declined", "your card was declined"]
             positive_kw = [
+                "approved",
+                "succeeded",
                 "security code is incorrect",
                 "incorrect security code",
                 "insufficient funds",
                 "insufficient_fund",
                 "insufficient_funds",
-                "approved",
                 "aproved",
                 "aprovado",
-                "succeeded",
                 "charge succeeded",
                 "paid",
             ]
 
-            if any(k in combined for k in decline_kw):
-                status = "Declined ❌"
-            elif any(k in combined for k in positive_kw):
+            if any(k in combined for k in positive_kw):
                 status = "Approved ✅"
+            elif any(k in combined for k in decline_kw):
+                status = "Declined ❌"
             else:
                 # Fallback: if our check reported ok but no clear text, consider as fail (conservative)
                 status = "Approved ✅" if any([
@@ -428,8 +428,6 @@ async def stripecharged_handler(u: Update, c: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             resultados += f"<b>ERROR:</b> {str(e)[:200]}\n"
             continue
-
-    await pizarra.edit_text(resultados + "\n✅ <b>Finalizado</b>", parse_mode="HTML")
 
 async def worker_bot(worker_id, app):
     while True:
