@@ -65,12 +65,10 @@ async def get_bin_dict_new(cc_bin):
     try:
         if proxy:
             logger.info(f"✅ Usando proxy HandyAPI: {proxy[:30]}...")
-            proxies = {"https://": proxy, "http://": proxy}
         else:
             logger.warning(f"⚠️  Sin proxy HandyAPI configurado")
-            proxies = None
 
-        async with httpx.AsyncClient(proxies=proxies) as client:
+        async with httpx.AsyncClient(proxy=proxy) as client:
             r = await client.get(url, headers=headers, timeout=10.0)
 
         if r.status_code != 200:
