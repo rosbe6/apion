@@ -2,13 +2,16 @@ import csv
 import re
 import os
 import httpx
+import logging
 from dotenv import load_dotenv
 # Importamos tu función desde el archivo paises.py
 from paises import obtener_pais_formateado
 
 # Cargar .env desde el directorio raíz del proyecto
 dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-load_dotenv(dotenv_path) 
+load_dotenv(dotenv_path)
+
+logger = logging.getLogger(__name__) 
 
 # Ruta hacia tu archivo bins_all.csv
 CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bins_all.csv"))
@@ -61,17 +64,17 @@ async def get_bin_dict_new(cc_bin):
 
     try:
         if proxy:
-            print(f"✅ Usando proxy HandyAPI: {proxy[:30]}...")
+            logger.info(f"✅ Usando proxy HandyAPI: {proxy[:30]}...")
             proxies = {"https://": proxy, "http://": proxy}
         else:
-            print(f"⚠️  Sin proxy HandyAPI configurado")
+            logger.warning(f"⚠️  Sin proxy HandyAPI configurado")
             proxies = None
 
         async with httpx.AsyncClient(proxies=proxies) as client:
             r = await client.get(url, headers=headers, timeout=10.0)
 
         if r.status_code != 200:
-            print(f"❌ HandyAPI error: Status {r.status_code}")
+            logger.error(f"❌ HandyAPI error: Status {r.status_code}")
             return None
 
         data = r.json()
@@ -125,7 +128,7 @@ async def get_bin_dict_new(cc_bin):
             "bank": banco
         }
     except Exception as e:
-        print(f"❌ HandyAPI error: {type(e).__name__}: {e}")
+        logger.error(f"❌ HandyAPI error: {type(e).__name__}: {e}")
         return None
 
 async def get_bin_info(cc_bin):
