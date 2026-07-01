@@ -48,6 +48,7 @@ data/database_apion.json
 data/bins_all.csv
 data/keys.json
 data/gates_config.json
+data/chats.json
 
 # Temporary files
 *.tmp

@@ -58,10 +58,16 @@ async def get_bin_dict_new(cc_bin):
     proxy = os.getenv('HANDYAPI_PROXY')
 
     try:
-        async with httpx.AsyncClient(proxies=proxy) as client:
+        if proxy:
+            proxies = {"https://": proxy, "http://": proxy}
+        else:
+            proxies = None
+
+        async with httpx.AsyncClient(proxies=proxies) as client:
             r = await client.get(url, headers=headers, timeout=10.0)
 
         if r.status_code != 200:
+            print(f"❌ HandyAPI error: Status {r.status_code}")
             return None
 
         data = r.json()
@@ -115,7 +121,7 @@ async def get_bin_dict_new(cc_bin):
             "bank": banco
         }
     except Exception as e:
-        print(f"Error consultando API remota BIN: {e}")
+        print(f"❌ HandyAPI error: {type(e).__name__}: {e}")
         return None
 
 async def get_bin_info(cc_bin):
