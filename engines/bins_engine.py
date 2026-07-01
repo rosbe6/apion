@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 # Importamos tu función desde el archivo paises.py
 from paises import obtener_pais_formateado
 
-load_dotenv() 
+# Cargar .env desde el directorio raíz del proyecto
+dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+load_dotenv(dotenv_path) 
 
 # Ruta hacia tu archivo bins_all.csv
 CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bins_all.csv"))
@@ -59,8 +61,10 @@ async def get_bin_dict_new(cc_bin):
 
     try:
         if proxy:
+            print(f"✅ Usando proxy HandyAPI: {proxy[:30]}...")
             proxies = {"https://": proxy, "http://": proxy}
         else:
+            print(f"⚠️  Sin proxy HandyAPI configurado")
             proxies = None
 
         async with httpx.AsyncClient(proxies=proxies) as client:
