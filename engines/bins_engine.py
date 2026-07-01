@@ -2,8 +2,11 @@ import csv
 import re
 import os
 import httpx
+from dotenv import load_dotenv
 # Importamos tu función desde el archivo paises.py
-from paises import obtener_pais_formateado 
+from paises import obtener_pais_formateado
+
+load_dotenv() 
 
 # Ruta hacia tu archivo bins_all.csv
 CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "bins_all.csv"))
@@ -52,9 +55,10 @@ async def get_bin_dict_new(cc_bin):
 
     url = f"https://data.handyapi.com/bin/{bin_query}"
     headers = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+    proxy = os.getenv('HANDYAPI_PROXY')
 
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(proxies=proxy) as client:
             r = await client.get(url, headers=headers, timeout=10.0)
 
         if r.status_code != 200:

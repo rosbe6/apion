@@ -164,7 +164,7 @@ async def bin_cmd(u: Update, c: ContextTypes.DEFAULT_TYPE):
     txt = (
         "<b>━━ ━ ━ ━ ━ ━ ━ ━ ━━</b>\n"
         
-        f"• <b>Bin |</b> <code>{data['bin']}</code>\n"
+        f"• <b>Bino |</b> <code>{data['bin']}</code>\n"
         f"• <b>Brand |</b> {data['brand']}\n"
         f"• <b>Type |</b> {data['type']}\n"
         f"• <b>Level |</b> {data['level']}\n"
