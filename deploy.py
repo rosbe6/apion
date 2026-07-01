@@ -11,7 +11,7 @@ VPS_USER = "administrator"
 VPS_PATH = "/home/bot/apion"
 
 def run_command(cmd, description):
-    """Ejecuta comando local"""
+    """Ejecuta comaando local"""
     print(f"\n📌 {description}...")
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
